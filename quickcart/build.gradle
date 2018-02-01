@@ -1,0 +1,154 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+ext.versions = [
+        'compileSdk': 26,
+        'minSdk'    : 19,
+        'targetSdk' : 26,
+        'kotlin'    : '1.1.51',
+        'supportLib': '26.1.0',
+        'dagger'    : '2.11',
+        'retrofit'  : '2.3.0',
+        'rxjava'    : '2.0.1',
+        'okHttp'    : '3.8.0',
+        'play'      : '11.8.0'
+]
+
+ext.deps = [
+        'support'    : [
+                'appcompat'       : "com.android.support:appcompat-v7:$versions.supportLib",
+                'design'          : "com.android.support:design:$versions.supportLib",
+                'cardView'        : "com.android.support:cardview-v7:$versions.supportLib",
+                'constraintLayout': 'com.android.support.constraint:constraint-layout:1.0.2',
+                'databinding'     : "com.android.databinding:compiler:3.0.1"
+        ],
+        'dagger'     : [
+                'android'         : "com.google.dagger:dagger-android:$versions.dagger",
+                'support'         : "com.google.dagger:dagger-android-support:$versions.dagger",
+                'base'            : "com.google.dagger:dagger:$versions.dagger",
+                'androidProcessor': "com.google.dagger:dagger-android-processor:$versions.dagger",
+                'compiler'        : "com.google.dagger:dagger-compiler:$versions.dagger"
+        ],
+        'retrofit'   : [
+                'base'     : "com.squareup.retrofit2:retrofit:$versions.retrofit",
+                'gson'     : "com.squareup.retrofit2:converter-gson:$versions.retrofit",
+                'rxadapter': "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
+        ],
+        'rxjava'     : [
+                'android': "io.reactivex.rxjava2:rxandroid:$versions.rxjava",
+                'java'   : "io.reactivex.rxjava2:rxjava:$versions.rxjava",
+                'relay'  : 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
+        ],
+        'firebase'   : [
+                'core'    : "com.google.firebase:firebase-core:$versions.play",
+                'auth'    : "com.google.firebase:firebase-auth:$versions.play",
+                'database': "com.google.firebase:firebase-database:$versions.play"
+        ],
+        'play'       : [
+                'auth': "com.google.android.gms:play-services-auth:$versions.play"
+        ],
+        'crashlytics': 'com.crashlytics.sdk.android:crashlytics:2.8.0@aar',
+        'glide'      : 'com.github.bumptech.glide:glide:3.7.0',
+        'timber'     : 'com.jakewharton.timber:timber:4.3.1',
+        'gson'       : 'com.google.code.gson:gson:2.8.1',
+        'okhttp'     : [
+                'base'   : "com.squareup.okhttp3:okhttp:$versions.okHttp",
+                'logging': "com.squareup.okhttp3:logging-interceptor:$versions.okHttp"
+        ],
+        'kotlin'     : [
+                'stdlib': "org.jetbrains.kotlin:kotlin-stdlib-jre7:$versions.kotlin"
+        ],
+        'unitTest'   : [
+                'junit'  : 'junit:junit:4.12',
+                'mockito': 'org.mockito:mockito-core:2.5.0'
+        ]
+]
+
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+def versionBuild = 0 // bump for public betas, etc
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Dependencies
+    implementation(
+
+            // Support
+            deps.support.appcompat,
+            deps.support.design,
+            deps.support.cardView,
+            deps.support.constraintLayout,
+
+            //Dagger
+            deps.dagger.android,
+            deps.dagger.support,
+            deps.dagger.base,
+
+            //Retrofit
+            deps.retrofit.base,
+            deps.retrofit.gson,
+            deps.retrofit.rxadapter,
+
+            // Rxjava
+            deps.rxjava.java,
+            deps.rxjava.android,
+            deps.rxjava.relay,
+
+            // OKhttp
+            deps.okhttp.logging,
+            deps.okhttp.base,
+            deps.gson,
+            deps.glide,
+            deps.timber,
+            deps.kotlin.stdlib,
+
+            // Firebase Auth
+            deps.firebase.auth,
+            deps.firebase.core,
+            deps.play.auth,
+
+            // Firebase Database
+            deps.firebase.database
+    )
+
+    kapt(
+            deps.dagger.androidProcessor,
+            deps.dagger.compiler,
+            deps.support.databinding
+    )
+
+    // Unit Tests
+    testImplementation 'junit:junit:4.12'
+
+    // Espresso Tests
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
